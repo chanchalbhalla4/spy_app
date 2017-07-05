@@ -1,25 +1,34 @@
-#Spychat project starts from here!
-#importing another files
+#importing files
+
 from spy_details import spy, Spy, ChatMessage, friends
+
 from steganography.steganography import Steganography
+
 from termcolor import colored
+
 from datetime import datetime
 
 
-#list for collecting status messages sets by the user
+#list for collecting status messages set by the user
+
 STATUS_MESSAGES = ['To heal the wound you need to stop touching it', 'Life is simple.','You get what you deserve in life.','I am busy']
 
 
 special=['SOS','sos','HELP','help']
 
-#Simple print statements to greet the user!
+#statements to greet the user!
 print colored("Hello!",'blue')
+
 print colored("Welcome to your Spy App.",'blue')
-#Ask u for are you an existing user
+
 question = colored("Do you want to continue as ", 'yellow') + spy.salutation + " " + spy.name + colored(" (Y/N)? ",'yellow')
+
 existing = raw_input(question)
 
+
+
 #function for adding and updating status
+
 def add_status():
 
     updated_status_message = None
@@ -38,6 +47,7 @@ def add_status():
 
         if len(new_status_message) > 0:
             STATUS_MESSAGES.append(new_status_message)
+
             updated_status_message = new_status_message
 
     elif default.upper() == 'Y':
@@ -46,12 +56,14 @@ def add_status():
 
         for message in STATUS_MESSAGES:
             print '%d. %s' % (item_position, message)
+
             item_position = item_position + 1
 
         message_selection = int(raw_input(colored("\nChoose from the above messages ",'yellow')))
 
 
         if len(STATUS_MESSAGES) >= message_selection:
+
             updated_status_message = STATUS_MESSAGES[message_selection - 1]
 
     else:
@@ -64,20 +76,27 @@ def add_status():
 
     return updated_status_message
 
+
+
+
 #Function for adding new friend
+
 def add_friend():
 
     new_friend = Spy('','',0,0.0)
 
     new_friend.name = raw_input(colored("Please tell your friend's name: ",'yellow'))
+
     new_friend.salutation = raw_input(colored("Are they Mr. or Ms.?: ",'yellow'))
 
     new_friend.name = new_friend.salutation + " " + new_friend.name
 
     new_friend.age = raw_input(colored("What is age of your friend?",'yellow'))
+
     new_friend.age = int(new_friend.age)
 
     new_friend.rating = raw_input(colored(" What is Spy rating?",'yellow'))
+
     new_friend.rating = float(new_friend.rating)
 
     if len(new_friend.name) > 0 and new_friend.age > 12:
@@ -88,8 +107,10 @@ def add_friend():
 
     return len(friends)
 
+#fucntion to select friends
 
 def select_a_friend():
+
     item_number = 0
 
     for friend in friends:
@@ -104,13 +125,19 @@ def select_a_friend():
     return friend_choice_position
 
 
+
+#function for send message
+
 def send_message():
 
     friend_choice = select_a_friend()
 
     original_image = raw_input(colored("What is the name of the image?",'yellow'))
+
     output_path = "1.jpg"
+
     text = raw_input(colored("What do you want to say? ",'yellow'))
+
     Steganography.encode(original_image, output_path, text)
 
     temp = text.split(' ')
@@ -126,6 +153,8 @@ def send_message():
     print colored("Your secret message image is ready!",'green')
 
 
+#function to read message
+
 def read_message():
 
     sender = select_a_friend()
@@ -133,16 +162,15 @@ def read_message():
     output_path = raw_input(colored("What is the name of the file?",'blue'))
 
     secret_text = Steganography.decode(output_path)
-
-    secret_text = str(secret_text)
-    if secret_text == 'None':
-        print colored("No secret message is coded in the image!", 'red')
-    else:
-        temp = secret_text.split(' ')
-        for i in special:
-            if i in temp:
-                temp[temp.index(i)] = colored('Please Help me, i am in Danger', 'red')
-        secret_text = str.join('', temp)
+    temp = secret_text.split(' ')
+    if len(temp):
+        del friends[sender]
+        print("friend deleted bcoz exceed limit of chat")
+        return "yes"
+    for i in special:
+        if i in temp:
+            temp[temp.index(i)] = colored('Please Help me, i am in Danger', 'red')
+    secret_text = str.join('', temp)
 
     new_chat = ChatMessage(secret_text,False)
 
@@ -151,6 +179,8 @@ def read_message():
     print colored("Your secret message has been saved!",'green')
 
 
+#function to read chat history
+
 def read_chat_history():
 
     read_for = select_a_friend()
@@ -158,7 +188,7 @@ def read_chat_history():
     print '\n'
 
     for chat in friends[read_for].chats:
-        #set the color of time blue
+
         a = colored(chat.time.strftime('%d %B %Y'), 'blue')
         if chat.sent_by_me:
 
@@ -166,9 +196,9 @@ def read_chat_history():
         else:
             print 'at',chat.time,colored( "Friend read : ",'blue'), colored(chat.message,'green')
 
-        # read_chat_history function ends
 
 
+#function to start chat
 
 
 def start_chat(spy):
@@ -186,6 +216,7 @@ def start_chat(spy):
 
         while show_menu:
             menu_choices = colored("What do you want to do? \n 1. Add a status update \n 2. Add a friend \n 3. Send a secret message \n 4. Read a secret message \n 5. Read Chats from a user \n 6. Close Application \n", 'blue')
+
             menu_choice = raw_input(menu_choices)
 
             if len(menu_choice) > 0:
@@ -195,12 +226,12 @@ def start_chat(spy):
                     spy.current_status_message = add_status()
                 elif menu_choice == 2:
                     number_of_friends = add_friend()
-                    #print colored('You have  friends','green'),'%d' % (colored(number_of_friends),'green')
+
                     print colored("you have",'green'),colored(number_of_friends,'green'),colored('friends','green')
                 elif menu_choice == 3:
                     send_message()
                 elif menu_choice == 4:
-                    read_message()
+                    temp = read_message()
                 elif menu_choice == 5:
                     read_chat_history()
                 else:
@@ -221,9 +252,11 @@ else:
         spy.salutation = raw_input(colored("Should I call you Mr. or Ms.?: ",'yellow'))
 
         spy.age = raw_input(colored("What is your age?",'yellow'))
+
         spy.age = int(spy.age)
 
         spy.rating = raw_input(colored("What is your spy rating?",'yellow'))
+
         spy.rating = float(spy.rating)
 
         start_chat(spy)

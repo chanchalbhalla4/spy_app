@@ -309,6 +309,16 @@ else:
 
         spy.rating = float(spy.rating)
 
+        if spy.rating > 4.5:
+            print colored('Your rating is really high!','green')
+        elif spy.rating > 3.5 and spy.rating <= 4.5:
+            print colored('Your rating is good!','green')
+        elif spy.rating >= 2.5 and spy.rating <= 3.5:
+            print colored('Yor rating can be better than this!','green')
+        else:
+            print colored("Your rating is very bad.",'red')
+
+
         start_chat(spy)
 
     else:
